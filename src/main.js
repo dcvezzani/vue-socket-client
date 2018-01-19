@@ -6,6 +6,8 @@ import VueSocketIO from 'vue-socket.io';
 import App from './App'
 import router from './router'
 
+require('./assets/sass/main.scss');
+
 Vue.config.productionTip = false
 
 export const SocketInstance = socketio('http://10.0.0.236:3000');

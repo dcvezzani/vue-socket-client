@@ -18,7 +18,5 @@ module.exports = {
     source: 'src',
     img: 'src',
     image: 'xlink:href'
-  }, 
-  scss: [ 'vue-style-loader', 'css-loader', 'sass-loader' ], 
-  sass: [ 'vue-style-loader', 'css-loader', 'sass-loader?indentedSyntax' ]
+  }
 }
