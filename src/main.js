@@ -8,7 +8,7 @@ import router from './router'
 
 Vue.config.productionTip = false
 
-export const SocketInstance = socketio('http://127.0.0.1:3000');
+export const SocketInstance = socketio('http://10.0.0.236:3000');
 Vue.use(VueSocketIO, SocketInstance)
 
 /* eslint-disable no-new */
