@@ -25,7 +25,7 @@ export default {
   name: 'CheckboxField',
   props: {
     tfName: {type: String, required: true}, 
-    tfDetails: {type: String, default: false}
+    tfDetails: {type: String, default: "false"}
   }, 
 
   data () {

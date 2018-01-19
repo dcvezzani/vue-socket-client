@@ -13,8 +13,13 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "bulma": "^0.6.2",
+    "bulma-calendar": "^0.1.7",
+    "bulma-extensions": "^0.6.7",
     "bulma-switch": "^0.1.2",
     "jquery": "^3.2.1",
+    "node-sass": "^4.7.2",
+    "sass-loader": "^6.0.6",
     "socket.io-client": "^2.0.4",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",

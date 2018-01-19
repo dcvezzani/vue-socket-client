@@ -26,7 +26,7 @@ export default {
   name: 'TextField',
   props: {
     tfName: {type: String, required: true},
-    tfDetails: {type: String, default: false}
+    tfDetails: {type: String, default: "false"}
   }, 
   data () {
     return {

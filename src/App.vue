@@ -6,14 +6,22 @@
       <router-link :to="{path: '/great'}">8 to Great</router-link> | 
       <router-link :to="{path: '/hello'}">Hello</router-link>
     </div>
+
+    <calendar></calendar>
+    <calendar></calendar>
     
     <router-view/>
   </div>
 </template>
 
 <script>
+import Calendar from '@/components/Calendar'
+
 export default {
   name: 'App',
+  components: {
+    'calendar': Calendar
+  },
   data () {
     return {
     }
