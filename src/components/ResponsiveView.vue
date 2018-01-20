@@ -11,7 +11,7 @@
     <calendar v-for="(month, index) in months" :key="'month-' + index" :month="month"></calendar>
     
     <div class="container">
-      <text-field tf-name="Positive Food" tf-details="true" class="topic-group"></text-field>
+      <text-field @save="saveDailyRecord" tf-name="Positive Food" tf-details="true" class="topic-group"></text-field>
       <text-field tf-name="Negative Food" tf-details="true" class="topic-group"></text-field>
       <text-field tf-name="Fruits & Vegetables" class="topic-group"></text-field>
       <water></water>
@@ -45,7 +45,8 @@ export default {
     return {
       loading: false,
       error: null, 
-      months: [ ]
+      months: [ ], 
+      dailyData: null
     }
   }, 
   methods: {
@@ -72,11 +73,38 @@ export default {
         theDays[theDays.length] = day.day;
       });
 
-      this.months[this.months.length] = {name: month, days: [pre, theDays, post]}
+      this.months[this.months.length] = {name: month, days: [pre, theDays, post], daysData: days}
     }, 
     fetch_calendar(data, callback) {
       this['loading'] = true;
       (new Vue()).$socket.emit('fetch_calendar', data, callback);
+    }, 
+    saveDailyRecord () {
+      let dayData = {"id":1,
+        "weekId":4,
+        "wholeDate": this.day.wholeDate,
+        "month": this.day.month,
+        "day": this.day.day,
+        "positiveFood": stringToInteger(this.day.positiveFood),
+        "positiveFoodData": this.day.positiveFoodData,
+        "negativeFood": stringToInteger(this.day.negativeFood),
+        "negativeFoodData": this.day.negativeFoodData,
+        "fruitsVegetables": stringToInteger(this.day.fruitsVegetables),
+        "water": stringToInteger(this.day.water),
+        "waterCupsCnt": stringToInteger(this.day.waterCupsCnt),
+        "after8": booleanToInteger(this.day.after8, 5),
+        "exercise": stringToInteger(this.day.exercise),
+        "exerciseData": this.day.exerciseData,
+        "dailyGreatness": booleanToInteger(this.day.dailyGreatness, 5),
+        "dailyGreatnessData": this.day.dailyGreatnessData,
+        "personalPrayer": booleanToInteger(this.day.personalPrayer, 5),
+        "personalPrayerData": this.day.personalPrayerData,
+        "scriptureStudy": booleanToInteger(this.day.scriptureStudy, 5),
+        "scriptureStudyData": this.day.scriptureStudyData
+        };
+
+      // console.log("updating with: " + JSON.stringify(dayData));
+      this.updateDay(dayData);
     }
   }, 
   created() {
@@ -84,6 +112,13 @@ export default {
     this.fetch_calendar('Feb 2018', 'populate_calendar');
     this.fetch_calendar('Mar 2018', 'populate_calendar');
   }, 
+
+  mounted () {
+    window.Event.$on('loadDailyData', (dayData) => {
+      window.Event.$emit('loadDailyDataFor', dayData);
+    }) 
+  }, 
+  
   sockets:{
     connect: function(){
       console.log('socket connected for ResponsiveView')
@@ -91,7 +126,7 @@ export default {
     // days
 
     calendar_fetched (resp) {
-      console.log("calendar fetched: " + JSON.stringify(resp));
+      // console.log("calendar fetched: " + JSON.stringify(resp));
       this[resp.callback](resp.collection[0].month, resp.collection);
 
       if (this.months.length == 3)

@@ -26,7 +26,7 @@
     </div>
     <div class="calendar-body">
       <calendar-day v-for="(day, index) in days[0]" :key="'pre-' + index" :disabled="true" :day="day"></calendar-day>
-      <calendar-day v-for="(day, index) in days[1]" :key="'cur-' + index" :day="day"></calendar-day>
+      <calendar-day v-for="(day, index) in daysData" :key="'cur-' + index" :day="day.day" :dayData="day"></calendar-day>
       <calendar-day v-for="(day, index) in days[2]" :key="'post-' + index" :disabled="true" :day="day"></calendar-day>
     </div>
   </div>
@@ -49,7 +49,8 @@ export default {
   data () {
     return {
       monthName: this.month.name, 
-      days: this.month.days
+      days: this.month.days, 
+      daysData: this.month.daysData
     }
   },
 
