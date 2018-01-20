@@ -150,6 +150,9 @@ export default {
     saveDay (day) {
       let dayData = {"id":1,
         "weekId":4,
+        "wholeDate": this.day.wholeDate,
+        "month": this.day.month,
+        "day": this.day.day,
         "positiveFood": stringToInteger(this.day.positiveFood),
         "positiveFoodData": this.day.positiveFoodData,
         "negativeFood": stringToInteger(this.day.negativeFood),
@@ -209,6 +212,9 @@ export default {
 
       this.day = {"id": day.id,
         "weekId": day.weekId,
+        "wholeDate": day.wholeDate,
+        "month": day.month,
+        "day": day.day,
         "positiveFood": day.positiveFood,
         "positiveFoodData": day.positiveFoodData,
         "negativeFood": day.negativeFood,
@@ -252,7 +258,7 @@ export default {
 
   sockets:{
     connect: function(){
-      console.log('socket connected')
+      console.log('socket connected for EightGreat')
     },
     got_it: function(val){
       console.log("got it: " + JSON.stringify(val));
