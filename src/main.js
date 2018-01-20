@@ -13,6 +13,8 @@ Vue.config.productionTip = false
 export const SocketInstance = socketio('http://10.0.0.236:3000');
 Vue.use(VueSocketIO, SocketInstance)
 
+window.Event = new Vue();
+
 /* eslint-disable no-new */
 var app = new Vue({
   el: '#app',

@@ -51,7 +51,15 @@ export default {
       monthName: this.month.name, 
       days: this.month.days
     }
+  },
+
+  mounted () {
+    window.Event.$on('clearAllDaysActive', (day) => {
+      // console.log("clearAllDaysActive except: " + day);
+      window.Event.$emit('clearAllActiveExceptFor', this.day);
+    }) 
   }
+
 }
 </script>
 

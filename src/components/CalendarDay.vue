@@ -1,5 +1,5 @@
 <template>
-  <div :class="['calendar-date', disabled ? 'is-disabled' : '']"><button class="date-item">{{ day }}</button></div>
+  <div :class="['calendar-date', disabled ? 'is-disabled' : '']"><button @click="toggle" :class="['date-item', isActive ? 'is-active' : '', isLocked ? 'is-locked' : '', ]">{{ day }}</button></div>
 
 </template>
 
@@ -14,13 +14,33 @@ export default {
 
   data () {
     return {
+      isActive: false
     }
+  }, 
+
+  methods: {
+    toggle() {
+      window.Event.$emit('clearAllDaysActive', this.day);
+      this.isActive = !this.isActive;
+    }
+  }, 
+
+  mounted () {
+    window.Event.$on('clearAllActiveExceptFor', (day) => {
+      // console.log("clear day: " + this.day);
+      this.isActive = (day == this.day);
+    }) 
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.calendar .calendar-date .date-item.is-locked {
+    background: #C4F3EB;
+    border-color: #C4F3EB;
+    color: #fff;
+}
 </style>
 
 

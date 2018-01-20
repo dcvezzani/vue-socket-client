@@ -91,7 +91,7 @@ export default {
     // days
 
     calendar_fetched (resp) {
-      // console.log("calendar fetched: " + JSON.stringify(resp));
+      console.log("calendar fetched: " + JSON.stringify(resp));
       this[resp.callback](resp.collection[0].month, resp.collection);
 
       if (this.months.length == 3)
