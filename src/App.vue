@@ -7,8 +7,7 @@
       <router-link :to="{path: '/hello'}">Hello</router-link>
     </div>
 
-    <calendar></calendar>
-    <calendar></calendar>
+    <calendar v-for="(month, index) in months" :key="'month-' + index" :month="month"></calendar>
     
     <router-view/>
   </div>
@@ -24,6 +23,10 @@ export default {
   },
   data () {
     return {
+      months: [
+        {name: 'Jan 2018', days: [ [31], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], [1, 2, 3] ]}, 
+        {name: 'Feb 2018', days: [ [28, 29, 30, 31], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28], [1, 2, 3] ]}, 
+      ]
     }
   }
 }
