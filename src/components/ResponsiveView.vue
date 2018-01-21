@@ -139,12 +139,11 @@ export default {
         "scriptureStudyData": day.scriptureStudyData
         };
 
-      console.log("updating with: " + JSON.stringify(dayData));
-      // this.updateDay(dayData);
+      // console.log("updating with: " + JSON.stringify(dayData));
+      this.updateDay(dayData);
     }, 
-    updateDay (dayData) {
-      console.log("link up with socket call to update data");
-      console.log(dayData);
+    updateDay (data) {
+      (new Vue()).$socket.emit('update_day', data);
     }
   }, 
   created() {
@@ -172,6 +171,11 @@ export default {
       if (this.months.length == 3)
         this.loading = false;
     },
+
+    day_updated: function(val){
+      console.log("day updated: " + JSON.stringify(val));
+    },
+    
   }
 }
 </script>
