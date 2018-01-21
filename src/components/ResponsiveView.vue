@@ -11,6 +11,8 @@
     <calendar v-for="(month, index) in months" :key="'month-' + index" :month="month"></calendar>
     
     <div class="container">
+      <p>Current date: {{ currentDate }}</p>
+      <p>Total points: {{ totalPoints }}</p>
       <text-field @save="saveDailyRecord" tf-name="Positive Food" tf-details="true" class="topic-group"></text-field>
       <text-field @save="saveDailyRecord" tf-name="Negative Food" tf-details="true" class="topic-group"></text-field>
       <text-field @save="saveDailyRecord" tf-name="Fruits & Vegetables" class="topic-group"></text-field>
@@ -20,6 +22,7 @@
       <checkbox-field @save="saveDailyRecord" tf-name="Daily Greatness" tf-details="true" class="topic-group"></checkbox-field>
       <checkbox-field @save="saveDailyRecord" tf-name="Personal Prayer" tf-details="true" class="topic-group"></checkbox-field>
       <checkbox-field @save="saveDailyRecord" tf-name="Scripture Study" tf-details="true" class="topic-group"></checkbox-field>
+      <p>Total points: {{ totalPoints }}</p>
     </div>
   </div>
 </template>
@@ -74,9 +77,11 @@ export default {
     return {
       loading: false,
       error: null, 
-      months: [ ], 
+      months: [], 
       daysById: {}, 
-      dailyData: null
+      dailyData: null, 
+      currentDate: null, 
+      totalPoints: 0
     }
   }, 
   methods: {
@@ -105,7 +110,8 @@ export default {
         self.daysById[day.id] = day;
       });
 
-      this.months[this.months.length] = {name: month, days: [pre, theDays, post], daysData: days}
+      if (this.months.length < 3)
+        this.months[this.months.length] = {name: month, days: [pre, theDays, post], daysData: days}
     }, 
     fetch_calendar(data, callback) {
       this['loading'] = true;
@@ -147,14 +153,25 @@ export default {
     }
   }, 
   created() {
-    this.fetch_calendar('Jan 2018', 'populate_calendar');
-    this.fetch_calendar('Feb 2018', 'populate_calendar');
-    this.fetch_calendar('Mar 2018', 'populate_calendar');
+    if (this.months.length == 0) {
+      this.fetch_calendar('Jan 2018', 'populate_calendar');
+      this.fetch_calendar('Feb 2018', 'populate_calendar');
+      this.fetch_calendar('Mar 2018', 'populate_calendar');
+    }
   }, 
 
   mounted () {
+    const self = this;
     window.Event.$on('loadDailyData', (dayData) => {
       window.Event.$emit('loadDailyDataFor', dayData);
+      self.currentDate = dayData.wholeDate;
+
+      self.totalPoints = 0;
+      let sumColumns = ["positiveFood", "negativeFood", "fruitsVegetables", "water", "after8", "exercise", "dailyGreatness", "personalPrayer", "scriptureStudy"];
+      $.each(sumColumns, function( index, col ) {
+        self.totalPoints += dayData[col];
+      });
+      
     }) 
   }, 
   
@@ -173,7 +190,17 @@ export default {
     },
 
     day_updated: function(val){
+      const self = this;
       console.log("day updated: " + JSON.stringify(val));
+      val.model
+
+      self.totalPoints = 0;
+      let sumColumns = ["positiveFood", "negativeFood", "fruitsVegetables", "water", "after8", "exercise", "dailyGreatness", "personalPrayer", "scriptureStudy"];
+      $.each(sumColumns, function( index, col ) {
+        self.totalPoints += val.model[col];
+      });
+      
+      window.Event.$emit('loadDailyData', val.model);
     },
     
   }

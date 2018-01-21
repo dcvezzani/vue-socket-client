@@ -49,7 +49,7 @@ export default {
         case 'Personal Prayer':
           theAttrs = {personalPrayer: 'points', personalPrayerData: 'details'};
           break;
-        case 'Script Study':
+        case 'Scripture Study':
           theAttrs = {scriptureStudy: 'points', scriptureStudyData: 'details'};
           break;
       }

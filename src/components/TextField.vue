@@ -10,6 +10,7 @@
         <input @blur="saveDailyContent" v-model="points" class="input" type="text">
       </div>
       <a @click="incPoints" class="button is-primary"> + </a>
+      <a @click="fullPoints" class="button is-success"> ^ </a>
       <div></div>
     </div>
 
@@ -84,6 +85,29 @@ export default {
           break;
       }
 
+      this.saveDailyContent()
+    },
+    fullPoints () {
+      switch(this.tfName){
+        case 'Positive Food':
+          this.points = 10;
+          break;
+        case 'Negative Food':
+          this.points = 0;
+          break;
+        case 'Fruits & Vegetables':
+          this.points = 10;
+          break;
+        case 'Water':
+          this.points = 10;
+          break;
+        case 'Cups of Water':
+          this.points = 5;
+          break;
+        case 'Exercise':
+          this.points = 20;
+          break;
+      }
       this.saveDailyContent()
     },
     saveDailyContent () {
