@@ -12,14 +12,14 @@
     
     <div class="container">
       <text-field @save="saveDailyRecord" tf-name="Positive Food" tf-details="true" class="topic-group"></text-field>
-      <text-field tf-name="Negative Food" tf-details="true" class="topic-group"></text-field>
-      <text-field tf-name="Fruits & Vegetables" class="topic-group"></text-field>
-      <water></water>
-      <checkbox-field tf-name="After 8" class="topic-group"></checkbox-field>
-      <text-field tf-name="Exercise" tf-details="true" class="topic-group"></text-field>
-      <checkbox-field tf-name="Daily Greatness" tf-details="true" class="topic-group"></checkbox-field>
-      <checkbox-field tf-name="Personal Prayer" tf-details="true" class="topic-group"></checkbox-field>
-      <checkbox-field tf-name="Scripture Study" tf-details="true" class="topic-group"></checkbox-field>
+      <text-field @save="saveDailyRecord" tf-name="Negative Food" tf-details="true" class="topic-group"></text-field>
+      <text-field @save="saveDailyRecord" tf-name="Fruits & Vegetables" class="topic-group"></text-field>
+      <water @save="saveDailyRecord"></water>
+      <checkbox-field @save="saveDailyRecord" tf-name="After 8" class="topic-group"></checkbox-field>
+      <text-field @save="saveDailyRecord" tf-name="Exercise" tf-details="true" class="topic-group"></text-field>
+      <checkbox-field @save="saveDailyRecord" tf-name="Daily Greatness" tf-details="true" class="topic-group"></checkbox-field>
+      <checkbox-field @save="saveDailyRecord" tf-name="Personal Prayer" tf-details="true" class="topic-group"></checkbox-field>
+      <checkbox-field @save="saveDailyRecord" tf-name="Scripture Study" tf-details="true" class="topic-group"></checkbox-field>
     </div>
   </div>
 </template>
@@ -31,6 +31,35 @@ import Calendar from '@/components/Calendar'
 import TextField from '@/components/TextField'
 import CheckboxField from '@/components/CheckboxField'
 import Water from '@/components/Water'
+
+let booleanToInteger = (valueBoolean, valueInteger) => {
+  if (typeof valueBoolean === undefined) {
+    valueBoolean = $('#' + event.target.id).is(":checked");
+  }
+
+  if (typeof valueInteger === undefined) {
+    valueInteger = 1;
+  }
+
+  return ((valueBoolean) ? valueInteger : 0)
+}
+
+let integerToBoolean = (valueInteger) => {
+  return (((typeof valueInteger === undefined) || (valueInteger == 0)) ? false : true);
+}
+
+let stringToInteger = (valueString) => {
+  try {
+    if (typeof valueString === undefined) {
+      valueString = $('#' + event.target.id).val();
+    }
+    return JSON.parse(valueString);
+
+  } catch(err) {
+    console.error("Unable to parse integer; using default value: 0");
+    return 0;
+  }
+}
 
 export default {
   name: 'ResponsiveView',
@@ -46,11 +75,13 @@ export default {
       loading: false,
       error: null, 
       months: [ ], 
+      daysById: {}, 
       dailyData: null
     }
   }, 
   methods: {
     populate_calendar(month, days) {
+      let self = this;
       let pre = []
       let post = []
       switch(month){
@@ -71,6 +102,7 @@ export default {
       let theDays = []
       $.each(days, function( index, day ) {
         theDays[theDays.length] = day.day;
+        self.daysById[day.id] = day;
       });
 
       this.months[this.months.length] = {name: month, days: [pre, theDays, post], daysData: days}
@@ -79,32 +111,40 @@ export default {
       this['loading'] = true;
       (new Vue()).$socket.emit('fetch_calendar', data, callback);
     }, 
-    saveDailyRecord () {
-      let dayData = {"id":1,
-        "weekId":4,
-        "wholeDate": this.day.wholeDate,
-        "month": this.day.month,
-        "day": this.day.day,
-        "positiveFood": stringToInteger(this.day.positiveFood),
-        "positiveFoodData": this.day.positiveFoodData,
-        "negativeFood": stringToInteger(this.day.negativeFood),
-        "negativeFoodData": this.day.negativeFoodData,
-        "fruitsVegetables": stringToInteger(this.day.fruitsVegetables),
-        "water": stringToInteger(this.day.water),
-        "waterCupsCnt": stringToInteger(this.day.waterCupsCnt),
-        "after8": booleanToInteger(this.day.after8, 5),
-        "exercise": stringToInteger(this.day.exercise),
-        "exerciseData": this.day.exerciseData,
-        "dailyGreatness": booleanToInteger(this.day.dailyGreatness, 5),
-        "dailyGreatnessData": this.day.dailyGreatnessData,
-        "personalPrayer": booleanToInteger(this.day.personalPrayer, 5),
-        "personalPrayerData": this.day.personalPrayerData,
-        "scriptureStudy": booleanToInteger(this.day.scriptureStudy, 5),
-        "scriptureStudyData": this.day.scriptureStudyData
+    saveDailyRecord (data) {
+      Object.assign(this.daysById[data.id], data);
+      let day = this.daysById[data.id];
+      console.log(day);
+
+      let dayData = {"id": day.id,
+        "weekId": day.weekId, 
+        "wholeDate": day.wholeDate,
+        "month": day.month,
+        "day": day.day,
+        "positiveFood": stringToInteger(day.positiveFood),
+        "positiveFoodData": day.positiveFoodData,
+        "negativeFood": stringToInteger(day.negativeFood),
+        "negativeFoodData": day.negativeFoodData,
+        "fruitsVegetables": stringToInteger(day.fruitsVegetables),
+        "water": stringToInteger(day.water),
+        "waterCupsCnt": stringToInteger(day.waterCupsCnt),
+        "after8": booleanToInteger(day.after8, 5),
+        "exercise": stringToInteger(day.exercise),
+        "exerciseData": day.exerciseData,
+        "dailyGreatness": booleanToInteger(day.dailyGreatness, 5),
+        "dailyGreatnessData": day.dailyGreatnessData,
+        "personalPrayer": booleanToInteger(day.personalPrayer, 5),
+        "personalPrayerData": day.personalPrayerData,
+        "scriptureStudy": booleanToInteger(day.scriptureStudy, 5),
+        "scriptureStudyData": day.scriptureStudyData
         };
 
-      // console.log("updating with: " + JSON.stringify(dayData));
-      this.updateDay(dayData);
+      console.log("updating with: " + JSON.stringify(dayData));
+      // this.updateDay(dayData);
+    }, 
+    updateDay (dayData) {
+      console.log("link up with socket call to update data");
+      console.log(dayData);
     }
   }, 
   created() {

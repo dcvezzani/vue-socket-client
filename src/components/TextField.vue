@@ -35,7 +35,8 @@ export default {
   data () {
     return {
       points: 0, 
-      details: ''
+      details: '', 
+      dayId: null
     }
   }, 
   computed: {
@@ -52,6 +53,12 @@ export default {
         case 'Fruits & Vegetables':
           theAttrs = {fruitsVegetables: 'points'};
           break;
+        case 'Water':
+          theAttrs = {water: 'points'};
+          break;
+        case 'Cups of Water':
+          theAttrs = {waterCupsCnt: 'points'};
+          break;
         case 'Exercise':
           theAttrs = {exercise: 'points', exerciseData: 'details'};
           break;
@@ -63,7 +70,16 @@ export default {
 
   methods: {
     saveDailyContent () {
-      console.log("saving data");
+      let self = this;
+      // console.log("saving data");
+
+      let attrData = {id: self.dayId}
+      $.each(Object.keys(this.supportedAttrs), function( index, attr ) {
+        attrData[attr] = self[self.supportedAttrs[attr]]
+      });
+      // console.log(attrData);
+
+      this.$emit('save', attrData);
       // (new Vue()).$socket.emit('', data, callback);
     }, 
     
@@ -75,6 +91,7 @@ export default {
       let self = this;
       // console.log(dayData);
 
+      this.dayId = dayData.id;
       $.each(Object.keys(this.supportedAttrs), function( index, attr ) {
         console.log(attr, self.supportedAttrs[attr]);
         self[self.supportedAttrs[attr]] = dayData[attr] || '';

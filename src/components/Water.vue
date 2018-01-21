@@ -1,7 +1,7 @@
 <template>
   <div class="water topic-group">
-    <text-field tf-name="Water"></text-field>
-    <text-field tf-name="Cups of Water"></text-field>
+    <text-field @save="saveDailyRecord" tf-name="Water"></text-field>
+    <text-field @save="saveDailyRecord" tf-name="Cups of Water"></text-field>
   </div>
 </template>
 
@@ -17,6 +17,13 @@ export default {
   },
   data () {
     return {
+    }
+  }, 
+
+  methods: {
+    saveDailyRecord (attrData) {
+      console.log(attrData);
+      this.$emit('save', attrData);
     }
   }
 }
