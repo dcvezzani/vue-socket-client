@@ -5,11 +5,11 @@
         <label class="label">{{ tfName }}</label>
       </div>
       <div class="controls-inline"></div>
-      <a class="button is-primary"> - </a>
+      <a @click="decPoints" class="button is-primary"> - </a>
       <div class="control small-number">
         <input @blur="saveDailyContent" v-model="points" class="input" type="text">
       </div>
-      <a class="button is-primary"> + </a>
+      <a @click="incPoints" class="button is-primary"> + </a>
       <div></div>
     </div>
 
@@ -69,6 +69,23 @@ export default {
   }, 
 
   methods: {
+    incPoints (direction) { this.adjPoints('up'); },
+    decPoints (direction) { this.adjPoints('down'); },
+    adjPoints (direction) {
+      if (typeof this.points !== 'number')
+        this.points = 0;
+
+      switch(direction){
+        case 'down':
+          this.points -= 1;
+          break;
+        case 'up':
+          this.points += 1;
+          break;
+      }
+
+      this.saveDailyContent()
+    },
     saveDailyContent () {
       let self = this;
       // console.log("saving data");
