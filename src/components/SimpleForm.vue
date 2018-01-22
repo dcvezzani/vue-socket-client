@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 // import TextField from '@/components/TextField'
 
 export default {
@@ -80,12 +81,25 @@ export default {
     })
     window.Event.$on('selectPerson', (person) => {
       this.selected = (person == this.label);
+
+      // if (person == this.label) {
+      //   (new Vue()).$socket.emit('login', this.label, 'loggedIn');
+      // } else {
+      //   (new Vue()).$socket.emit('logout', this.label, 'loggedOut');
+      // }
+      
     })
+    window.Event.$on('logout', () => {
+      (new Vue()).$socket.emit('logout', this.label, 'loggedOut');
+    })
+
+    
   }, 
 
   sockets:{
     connect: function(){
-      console.log('socket connected for SimpleForm')
+      console.log('socket connected for SimpleForm');
+      (new Vue()).$socket.emit('login', this.label, 'loggedIn');
     },
   }, 
   

@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import SimpleForm from '@/components/SimpleForm'
 import $ from 'jquery'
 
@@ -39,12 +40,8 @@ export default {
   data () {
     return {
       currentPerson: 'Joe', 
-      people: {
-        Joe: { details: 'Debitis dolores eligendi eaque nihil praesentium libero recusandae! Illum', points: 0 }, 
-        Karen: { details: 'Lorem accusamus doloribus ipsum inventore illo ea incidunt Provident eligendi aperiam obcaecati architecto unde', points: 2 }, 
-        George: { details: 'Corrupti maxime molestiae optio voluptatibus ad vitae dolor unde Assumenda', points: 5 }, 
-        Kyle: { details: 'obcaecati tempora Alias officia doloremque dolorem consectetur quasi Pariatur illo similique', points: 10 }, 
-      }
+      people: {}, 
+      initialized: false
     }
   }, 
 
@@ -56,11 +53,10 @@ export default {
         lTotalPoints += self.people[key].points;
       });
       return lTotalPoints;
-    }
+    }, 
   }, 
 
   methods: {
-    blah () {}, 
     personMatches (label) {
       return true; //(this.currentPerson == label);
     }, 
@@ -69,26 +65,86 @@ export default {
       this.updateView();
     }, 
     updateView () {
-      window.Event.$emit('sLoadData', this.currentPerson, this.people[this.currentPerson]);
+      const peopleKeys = Object.keys(this.people);
+      const self = this;
+
+      $.each(peopleKeys, function( index, person ) {
+        window.Event.$emit('sLoadData', person, self.people[person]);
+      });
+
       window.Event.$emit('updateTotal', this.currentPerson, this.totalPoints);
       window.Event.$emit('selectPerson', this.currentPerson);
     }, 
+    loadData () {
+      (new Vue()).$socket.emit('fetch_people');
+    }, 
+    filteredPerson (person) {
+      const self = this;
+      let filtered = {}
+      const filteredKeys = ['id', 'name', 'points', 'details']
+
+      $.each(filteredKeys, function( index, key ) {
+        filtered[key] = self.people[person][key]
+      });
+
+      return filtered;
+    }, 
+    save (person) {
+      (new Vue()).$socket.emit('update_person', this.filteredPerson(person));
+    }, 
+    initView () {
+      window.Event.$on('incPoints', (person) => {
+        if (this.currentPerson == person) {
+          this.people[person].points += 1;
+          this.save(person);
+        }
+      }); 
+      window.Event.$on('decPoints', (person) => {
+        if (this.currentPerson == person) {
+          this.people[person].points -= 1;
+          this.save(person);
+        }
+      }); 
+
+      this.initialized = true;
+    }
   }, 
 
   mounted () {
-    this.updateView();
-    window.Event.$on('incPoints', (person) => {
-      if (this.currentPerson == person) {
-        this.people[person].points += 1;
-        this.updateView();
-      }
-    }); 
-    window.Event.$on('decPoints', (person) => {
-      if (this.currentPerson == person) {
-        this.people[person].points -= 1;
-        this.updateView();
-      }
-    }); 
+    this.loadData();
+  }, 
+
+  sockets:{
+    connect: function(){
+      console.log("socket connected for Simple");
+      (new Vue()).$socket.emit('login', this.currentPerson, 'loggedIn');
+    },
+    disconnect: function(){
+      (new Vue()).$socket.emit('logout', this.currentPerson);
+    },
+    loggedIn: function(resp){
+      console.log('logged in for: ' + JSON.stringify(resp));
+    },
+    loggedOut: function(resp){
+      console.log('logged out for: ' + JSON.stringify(resp));
+    },
+    person_updated: function(resp){
+      this.loadData()
+    },
+    people_fetched: function(resp){
+      const self = this;
+      console.log('people fetched: ' + JSON.stringify(resp));
+      console.log(resp.collection);
+
+      $.each(resp.collection, function( index, rec ) {
+        self.people[rec.name] = rec;
+      });
+
+      this.updateView();
+
+      if (!this.initialized)
+        this.initView();
+    },
   }, 
 
 }
